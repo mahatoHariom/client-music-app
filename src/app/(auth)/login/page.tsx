@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useReducer } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -24,6 +24,7 @@ import { LoginFormData, loginSchema } from "@/validations/login";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/slices/auth-slice";
+import { useRouter } from "next/navigation";
 
 const LoginPage: React.FC = () => {
   const form = useForm<LoginFormData>({
@@ -35,6 +36,7 @@ const LoginPage: React.FC = () => {
     formState: { errors },
   } = form;
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const { mutate: loginUserMutation, isPending } = useMutation({
     mutationKey: [mutationKeys.login],
@@ -44,8 +46,8 @@ const LoginPage: React.FC = () => {
       toast.success("Logged in successfully");
       Cookies.set("accessToken", data.accessToken, { expires: 1 });
       Cookies.set("refreshToken", data.refreshToken, { expires: 7 });
-
       dispatch(setUser(data.user));
+      router.push("/dashboard");
     },
     onError: (error) => {
       if (error instanceof AxiosError)
