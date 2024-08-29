@@ -21,8 +21,10 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { RegisterFormData, registerSchema } from "@/validations/register";
+import { useRouter } from "next/navigation";
 
 const RegisterPage: React.FC = () => {
+  const router = useRouter();
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   });
@@ -36,8 +38,8 @@ const RegisterPage: React.FC = () => {
     mutationKey: [mutationKeys.register],
     mutationFn: registerUser,
     onSuccess: (data) => {
-      console.log(data);
       toast.success("User Created Successfully");
+      router.push("/login");
     },
     onError: (error) => {
       if (error instanceof AxiosError)
