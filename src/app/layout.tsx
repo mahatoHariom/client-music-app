@@ -28,7 +28,14 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <div className="flex w-full flex-col gap-10">
+            <h1 className="text-4xl text-center font-medium mt-10">
+              Artist Management System
+            </h1>
+            {children}
+          </div>
+        </Providers>
       </body>
     </html>
   );

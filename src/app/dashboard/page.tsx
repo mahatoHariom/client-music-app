@@ -6,12 +6,16 @@ import ArtistsContent from "@/components/dashboard/artist-table";
 
 const DashboardPage: React.FC = () => {
   return (
-    <div className="flex flex-col items-center justify-center mt-44">
+    <div className="flex flex-col items-center justify-center ">
       <div className="w-full max-w-4xl">
-        <Tabs defaultValue="users" className="w-full flex-col flex gap-20">
+        <Tabs defaultValue="users" className="w-full flex-col flex gap-10">
           <TabsList className="justify-center w-96">
-            <TabsTrigger value="users">Users</TabsTrigger>
-            <TabsTrigger value="artists">Artists</TabsTrigger>
+            <TabsTrigger value="users" className="w-full">
+              Users
+            </TabsTrigger>
+            <TabsTrigger value="artists" className="w-full">
+              Artists
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="users">
             <UsersTable />
