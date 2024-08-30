@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import {
   Table,
@@ -15,6 +16,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuPortal,
+  DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { mutationKeys, queryKeys } from "@/utils/mutation-keys";
@@ -52,13 +54,11 @@ const UsersTable: React.FC = () => {
   const handleUpdate = (userId: number) => {
     setSelectedUserId(userId);
   };
-
   const handleCloseModal = () => {
     setSelectedUserId(null);
   };
-
   return (
-    <>
+    <div>
       <UserUpdateModal
         userId={selectedUserId}
         onClose={handleCloseModal}
@@ -88,12 +88,14 @@ const UsersTable: React.FC = () => {
                       <Button>Actions</Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                      <DropdownMenuItem onClick={() => handleUpdate(user.id)}>
-                        Update
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDelete(user.id)}>
-                        Delete
-                      </DropdownMenuItem>
+                      <DropdownMenuGroup>
+                        <DropdownMenuItem onClick={() => handleUpdate(user.id)}>
+                          Update
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDelete(user.id)}>
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuGroup>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -102,7 +104,7 @@ const UsersTable: React.FC = () => {
           </TableBody>
         </Table>
       )}
-    </>
+    </div>
   );
 };
 

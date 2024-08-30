@@ -22,7 +22,7 @@ export const getUserById = async (userId: number) => {
   return response.data;
 };
 
-export const updateUser = async (data: User) => {
+export const updateUser = async (userId: number, data: RegisterFormData) => {
   const response = await api.put(`/users/${userId}`, data);
   return response.data;
 };

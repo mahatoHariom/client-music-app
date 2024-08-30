@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -47,26 +48,35 @@ const UserUpdateModal: React.FC<UserUpdateModalProps> = ({
     queryKey: [queryKeys.getUserById, userId],
     queryFn: () => getUserById(userId!),
     enabled: !!userId,
-    onSuccess: (data) => {
-      reset(data); // Set the form with fetched user data
-    },
   });
 
-  const { mutate: updateUserMutation, isLoading: isPending } = useMutation({
+  useEffect(() => {
+    if (user) {
+      reset(user);
+    }
+  }, [user, reset]);
+
+  const { mutate: updateUserMutation } = useMutation({
     mutationKey: [mutationKeys.updateUser],
-    mutationFn: updateUser,
+    mutationFn: (data: RegisterFormData) => updateUser(userId!, data),
     onSuccess: () => {
       toast.success("User updated successfully");
       refetchUsers();
       onClose();
     },
     onError: (error: AxiosError) => {
-      toast.error(error.response?.data.message);
+      if (error instanceof AxiosError) {
+        const message =
+          (error.response?.data as any)?.message || "An error occurred";
+        toast.error(message);
+      }
     },
   });
 
   const onSubmit = (data: RegisterFormData) => {
-    updateUserMutation(data);
+    if (userId) {
+      updateUserMutation(data);
+    }
   };
 
   return (
@@ -148,24 +158,6 @@ const UserUpdateModal: React.FC<UserUpdateModalProps> = ({
 
               <FormField
                 control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Password"
-                        type="password"
-                      />
-                    </FormControl>
-                    <FormMessage>{errors.password?.message}</FormMessage>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
                 name="dob"
                 render={({ field }) => (
                   <FormItem>
@@ -199,12 +191,13 @@ const UserUpdateModal: React.FC<UserUpdateModalProps> = ({
               <Button
                 type="submit"
                 className="mt-4 w-full"
-                disabled={isPending}
+                // disabled={isPending}
               >
-                {isPending && (
+                {/* {isPending && (
                   <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                {isPending ? "Updating..." : "Update"}
+                )} */}
+                {/* {isPending ? "Updating..." : "Update"} */}
+                Update
               </Button>
             </form>
           </Form>
