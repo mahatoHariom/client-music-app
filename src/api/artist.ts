@@ -1,7 +1,10 @@
 import api from "@/lib/axios-instance";
 import { Artist } from "@/types/artist";
 import { Pagination } from "@/types/pagination";
-import { CreateArtistFormData } from "@/validations/artist";
+import {
+  CreateArtistFormData,
+  UpdateArtistFormData,
+} from "@/validations/artist";
 
 interface GetArtistsResponse {
   artists: Artist[];
@@ -34,9 +37,9 @@ export const updateArtistById = async ({
   ...artist
 }: {
   id: number;
-  artist: CreateArtistFormData;
+  artist: UpdateArtistFormData;
 }): Promise<any> => {
-  const { data } = await api.put(`/artist/update/${id}`, artist);
+  const { data } = await api.put(`/artist/update/${id}`, { ...artist });
   return data;
 };
 

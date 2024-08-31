@@ -9,9 +9,7 @@ export const registerSchema = z.object({
   password: z
     .string()
     .min(6, { message: "Password must be at least 6 characters" }),
-  dob: z.string().refine((val) => !isNaN(Date.parse(val)), {
-    message: "Invalid date format",
-  }),
+    dob: z.date({ required_error: "A date of birth is required" }),
   gender: z.enum(["M", "F", "O"], { required_error: "Gender is required" }),
 });
 

@@ -28,12 +28,13 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { deleteArtist, getArtists, createArtist } from "@/api/artist";
+import { deleteArtist, getArtists } from "@/api/artist";
 import { Input } from "../../ui/input";
 import { Artist } from "@/types/artist";
-import { CreateArtistFormData } from "@/validations/artist";
 import ArtistCreateModal from "../modal/create-artist-modal";
+
 import { PlusCircledIcon } from "@radix-ui/react-icons";
+import ArtistUpdateModal from "../modal/artist-update-modal";
 
 const ArtistsTable: React.FC = () => {
   const router = useRouter();
@@ -47,6 +48,7 @@ const ArtistsTable: React.FC = () => {
   const [limit] = useState<number>(initialLimit);
   const [search, setSearch] = useState<string>(initialSearch);
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
+  const [showUpdateModal, setShowUpdateModal] = useState<boolean>(false);
 
   useEffect(() => {
     const params = new URLSearchParams({
@@ -76,16 +78,23 @@ const ArtistsTable: React.FC = () => {
       toast.error("Failed to delete artist");
     },
   });
+
   const handleDelete = (artistId: number) => {
     deleteArtistMutation(artistId);
   };
 
   const handleUpdate = (artistId: number) => {
     setSelectedArtistId(artistId);
+    setShowUpdateModal(true);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseCreateModal = () => {
     setShowCreateModal(false);
+  };
+
+  const handleCloseUpdateModal = () => {
+    setShowUpdateModal(false);
+    setSelectedArtistId(null);
   };
 
   const handlePageChange = (page: number) => {
@@ -104,8 +113,13 @@ const ArtistsTable: React.FC = () => {
       <ArtistCreateModal
         isOpen={showCreateModal}
         refetchArtists={refetch}
-        onClose={handleCloseModal}
-        // onSubmit={handleCreateArtist}
+        onClose={handleCloseCreateModal}
+      />
+      <ArtistUpdateModal
+        artistId={selectedArtistId}
+        // isOpen={showUpdateModal}
+        onClose={handleCloseUpdateModal}
+        refetchArtists={refetch}
       />
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-medium w-full">All Artists</h1>
