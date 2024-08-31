@@ -32,6 +32,8 @@ import { deleteUser, getUsers } from "@/api/user";
 import UserUpdateModal from "../modal/user-update-modal";
 import { User } from "@/types/user";
 import { Input } from "../../ui/input";
+import UserCreateModal from "../modal/user-create-modal";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
 
 const UsersTable: React.FC = () => {
   const router = useRouter();
@@ -39,8 +41,8 @@ const UsersTable: React.FC = () => {
   const initialPage = Number(searchParams.get("page")) || 1;
   const initialLimit = Number(searchParams.get("limit")) || 5;
   const initialSearch = searchParams.get("search") || "";
-
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(initialPage);
   const [limit] = useState<number>(initialLimit);
   const [search, setSearch] = useState<string>(initialSearch);
@@ -83,8 +85,16 @@ const UsersTable: React.FC = () => {
     setSelectedUserId(userId);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseUpdateModal = () => {
     setSelectedUserId(null);
+  };
+
+  const handleOpenCreateModal = () => {
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCloseCreateModal = () => {
+    setIsCreateModalOpen(false);
   };
 
   const handlePageChange = (page: number) => {
@@ -98,18 +108,33 @@ const UsersTable: React.FC = () => {
 
   return (
     <div>
+      {/* User Update Modal */}
       <UserUpdateModal
         userId={selectedUserId}
-        onClose={handleCloseModal}
+        onClose={handleCloseUpdateModal}
         refetchUsers={refetch}
       />
+
+      {/* User Create Modal */}
+      <UserCreateModal
+        isOpen={isCreateModalOpen}
+        onClose={handleCloseCreateModal}
+        refetchUsers={refetch}
+      />
+
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-medium w-full">All Users</h1>
-        <Input
-          value={search}
-          onChange={handleSearchChange}
-          placeholder="Search by name or email..."
-        />
+        <div className="flex items-center space-x-2 w-full">
+          <Input
+            className="w-full"
+            value={search}
+            onChange={handleSearchChange}
+            placeholder="Search by name or email..."
+          />
+          <Button onClick={handleOpenCreateModal} className="flex gap-2">
+            <PlusCircledIcon /> Add User
+          </Button>
+        </div>
       </div>
       {isLoading ? (
         <div>Loading...</div>
@@ -121,6 +146,8 @@ const UsersTable: React.FC = () => {
                 <TableHead>First Name</TableHead>
                 <TableHead>Last Name</TableHead>
                 <TableHead>Email</TableHead>
+                <TableHead>Phone</TableHead>
+                <TableHead>Address</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -130,6 +157,8 @@ const UsersTable: React.FC = () => {
                   <TableCell>{user.first_name}</TableCell>
                   <TableCell>{user.last_name}</TableCell>
                   <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.phone}</TableCell>
+                  <TableCell>{user.address}</TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger>
@@ -164,17 +193,18 @@ const UsersTable: React.FC = () => {
                   onClick={() => handlePageChange(currentPage - 1)}
                 />
               </PaginationItem>
-              {[...Array(usersData?.pagination.totalPages)].map((_, index) => (
-                <PaginationItem key={index}>
-                  <PaginationLink
-                    href="#"
-                    isActive={currentPage === index + 1}
-                    onClick={() => handlePageChange(index + 1)}
-                  >
-                    {index + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
+              {usersData?.pagination.totalPages &&
+                [...Array(usersData.pagination.totalPages)].map((_, index) => (
+                  <PaginationItem key={index}>
+                    <PaginationLink
+                      href="#"
+                      isActive={currentPage === index + 1}
+                      onClick={() => handlePageChange(index + 1)}
+                    >
+                      {index + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
               <PaginationItem>
                 {currentPage !== usersData?.pagination.totalPages && (
                   <PaginationNext

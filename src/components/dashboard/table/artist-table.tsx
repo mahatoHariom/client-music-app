@@ -120,7 +120,9 @@ const ArtistsTable: React.FC = () => {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Date of Birth</TableHead>
-                <TableHead>Gender</TableHead>
+                <TableHead>Address</TableHead>
+                <TableHead>First Released Year</TableHead>
+                <TableHead>No. of Albums Released</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -128,8 +130,21 @@ const ArtistsTable: React.FC = () => {
               {artistsData?.artists.map((artist: Artist) => (
                 <TableRow key={artist.id}>
                   <TableCell>{artist.name}</TableCell>
+                  <TableCell>
+                    {artist.dob
+                      ? new Date(artist.dob).toISOString().split("T")[0]
+                      : "N/A"}
+                  </TableCell>
 
-                  <TableCell>{artist.gender}</TableCell>
+                  <TableCell>{artist.address}</TableCell>
+                  <TableCell>
+                    {artist.first_release_year
+                      ? new Date(artist.first_release_year)
+                          .toISOString()
+                          .split("T")[0]
+                      : "N/A"}
+                  </TableCell>
+                  <TableCell>{artist.no_of_albums_released}</TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger>

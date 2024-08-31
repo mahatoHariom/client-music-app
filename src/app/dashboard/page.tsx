@@ -2,7 +2,7 @@
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UsersTable from "@/components/dashboard/table/users-table";
-import ArtistsContent from "@/components/dashboard/artist-table";
+import ArtistsTable from "@/components/dashboard/table/artist-table";
 
 const DashboardPage: React.FC = () => {
   return (
@@ -21,7 +21,7 @@ const DashboardPage: React.FC = () => {
             <UsersTable />
           </TabsContent>
           <TabsContent value="artists">
-            <ArtistsContent />
+            <ArtistsTable />
           </TabsContent>
         </Tabs>
       </div>
