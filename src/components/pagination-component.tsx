@@ -9,20 +9,23 @@ import {
 } from "@/components/ui/pagination";
 
 interface PaginationProps {
-  totalPages: number;
   currentPage: number;
+  totalPages: number;
   onPageChange: (page: number) => void;
 }
 
-const PaginationComponent: React.FC<PaginationProps> = ({
-  totalPages,
+const CustomPagination: React.FC<PaginationProps> = ({
   currentPage,
+  totalPages,
   onPageChange,
 }) => (
   <Pagination>
     <PaginationContent>
       <PaginationItem>
-        <PaginationPrevious onClick={() => onPageChange(currentPage - 1)} />
+        <PaginationPrevious
+          onClick={() => onPageChange(currentPage - 1)}
+          // disabled={currentPage === 1}
+        />
       </PaginationItem>
       {[...Array(totalPages)].map((_, index) => (
         <PaginationItem key={index}>
@@ -36,10 +39,13 @@ const PaginationComponent: React.FC<PaginationProps> = ({
         </PaginationItem>
       ))}
       <PaginationItem>
-        <PaginationNext onClick={() => onPageChange(currentPage + 1)} />
+        <PaginationNext
+          onClick={() => onPageChange(currentPage + 1)}
+          // disabled={currentPage === totalPages}
+        />
       </PaginationItem>
     </PaginationContent>
   </Pagination>
 );
 
-export default PaginationComponent;
+export default CustomPagination;

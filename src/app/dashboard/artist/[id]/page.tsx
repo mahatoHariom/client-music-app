@@ -14,8 +14,12 @@ const ArtistSongs = () => {
   };
 
   return (
-    <div className="w-[80%] m-auto h-full">
-      <Button onClick={handleBackClick} variant={"outline"}>
+    <div className="max-w-4xl m-auto  w-full h-full flex flex-col gap-10">
+      <Button
+        onClick={handleBackClick}
+        variant={"outline"}
+        className="w-34 max-w-52"
+      >
         <IoIosArrowRoundBack /> Back to dashboard
       </Button>
       <SongsTable artistId={Number(id)} />
