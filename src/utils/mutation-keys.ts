@@ -16,5 +16,6 @@ export const mutationKeys = {
 export const queryKeys = {
   getAllUsers: "getAllUsers",
   getUserById: "getUserById",
+  getMusicById: "getUserById",
   getArtistById: "getArtistById",
 };

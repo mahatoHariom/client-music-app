@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -38,6 +38,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import SongCreateModal from "../modal/song-create-modal";
+import SongUpdateModal from "../modal/song-update-modal"; // Import the update modal
 
 interface SongTableProps {
   artistId: number;
@@ -45,19 +46,30 @@ interface SongTableProps {
 
 const SongsTable: React.FC<SongTableProps> = ({ artistId }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialPage = Number(searchParams.get("page")) || 1;
+  const initialSearch = searchParams.get("search") || "";
   const [selectedMusicId, setSelectedMusicId] = useState<number | null>(null);
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
   const [showUpdateModal, setShowUpdateModal] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>(initialSearch);
+  const [currentPage, setCurrentPage] = useState<number>(initialPage);
 
-  const [search, setSearch] = useState<string>("");
+  useEffect(() => {
+    const params = new URLSearchParams({
+      page: String(currentPage),
+      search,
+    });
+    router.push(`?${params.toString()}`);
+  }, [currentPage, search, router]);
 
   const {
     data: musicData,
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["music", artistId, search],
-    queryFn: () => getMusicByArtistId(Number(artistId), search),
+    queryKey: ["music", artistId, currentPage, search],
+    queryFn: () => getMusicByArtistId(artistId, search, currentPage),
   });
 
   const { mutate: createMusicMutation } = useMutation({
@@ -107,15 +119,14 @@ const SongsTable: React.FC<SongTableProps> = ({ artistId }) => {
     deleteMusicMutation(musicId);
   };
 
-  const [currentPage, setCurrentPage] = useState(1);
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    refetch();
   };
 
-  useEffect(() => {
-    refetch();
-  }, [search, currentPage]);
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value);
+    setCurrentPage(1);
+  };
 
   return (
     <div>
@@ -126,13 +137,21 @@ const SongsTable: React.FC<SongTableProps> = ({ artistId }) => {
         artistId={artistId}
       />
 
+      <SongUpdateModal
+        isOpen={showUpdateModal}
+        onClose={() => setShowUpdateModal(false)}
+        refetchSongs={refetch}
+        artistId={artistId}
+        musicId={selectedMusicId!}
+      />
+
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-medium">All Songs</h1>
         <div className="flex items-center">
           <Input
             placeholder="Search..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleSearchChange}
             className="mr-4 w-full min-w-96"
           />
           <Button onClick={() => setShowCreateModal(true)}>
@@ -144,95 +163,97 @@ const SongsTable: React.FC<SongTableProps> = ({ artistId }) => {
       {isLoading ? (
         <div>Loading...</div>
       ) : (
-        <Table className="w-full border border-slate-100">
-          <TableHeader>
-            <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Album</TableHead>
-              <TableHead>Genre</TableHead>
-              <TableHead>Created At</TableHead>
-              <TableHead>Updated At</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {musicData?.data.map((music: Music) => (
-              <TableRow key={music.id}>
-                <TableCell>{music.title}</TableCell>
-                <TableCell>{music.album_name}</TableCell>
-                <TableCell>{music.genre}</TableCell>
-                <TableCell>
-                  {
-                    new Date(music.created_at as string)
-                      .toISOString()
-                      .split("T")[0]
-                  }
-                </TableCell>
-                <TableCell>
-                  {
-                    new Date(music.updated_at as string)
-                      .toISOString()
-                      .split("T")[0]
-                  }
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <Button>Actions</Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuGroup>
-                        <DropdownMenuItem
-                          onClick={() => handleUpdate(music.id)}
-                        >
-                          Update
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleDelete(music.id)}
-                        >
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuGroup>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+        <>
+          <Table className="w-full border border-slate-100">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Title</TableHead>
+                <TableHead>Album</TableHead>
+                <TableHead>Genre</TableHead>
+                <TableHead>Created At</TableHead>
+                <TableHead>Updated At</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
+            </TableHeader>
+            <TableBody>
+              {musicData?.data.map((music: Music) => (
+                <TableRow key={music.id}>
+                  <TableCell>{music.title}</TableCell>
+                  <TableCell>{music.album_name}</TableCell>
+                  <TableCell>{music.genre}</TableCell>
+                  <TableCell>
+                    {
+                      new Date(music.created_at as string)
+                        .toISOString()
+                        .split("T")[0]
+                    }
+                  </TableCell>
+                  <TableCell>
+                    {
+                      new Date(music.updated_at as string)
+                        .toISOString()
+                        .split("T")[0]
+                    }
+                  </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger>
+                        <Button>Actions</Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuGroup>
+                          <DropdownMenuItem
+                            onClick={() => handleUpdate(music.id)}
+                          >
+                            Update
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleDelete(music.id)}
+                          >
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
 
-      <div className="mt-4">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => handlePageChange(currentPage - 1)}
-                // disabled={currentPage === 1}
-              />
-            </PaginationItem>
-            {[...Array(musicData?.pagination.totalPages || 0)].map(
-              (_, index) => (
-                <PaginationItem key={index}>
-                  <PaginationLink
-                    href="#"
-                    isActive={currentPage === index + 1}
-                    onClick={() => handlePageChange(index + 1)}
-                  >
-                    {index + 1}
-                  </PaginationLink>
+          <div className="mt-4">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    // disabled={currentPage === 1}
+                  />
                 </PaginationItem>
-              )
-            )}
-            <PaginationItem>
-              <PaginationNext
-                onClick={() => handlePageChange(currentPage + 1)}
-                // disabled={currentPage === musicData?.pagination.totalPages}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
+                {[...Array(musicData?.pagination.totalPages || 0)].map(
+                  (_, index) => (
+                    <PaginationItem key={index}>
+                      <PaginationLink
+                        href="#"
+                        isActive={currentPage === index + 1}
+                        onClick={() => handlePageChange(index + 1)}
+                      >
+                        {index + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )
+                )}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    // disabled={currentPage === (musicData?.pagination.totalPages || 0)}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        </>
+      )}
     </div>
   );
 };
