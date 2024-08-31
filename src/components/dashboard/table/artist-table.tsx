@@ -58,6 +58,9 @@ const ArtistsTable: React.FC = () => {
   const [search, setSearch] = useState<string>(initialSearch);
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
   const [showUpdateModal, setShowUpdateModal] = useState<boolean>(false);
+  const handleViewSongs = (artistId: number) => {
+    router.push(`/dashboard/artist/${artistId}`);
+  };
 
   useEffect(() => {
     const params = new URLSearchParams({
@@ -267,6 +270,11 @@ const ArtistsTable: React.FC = () => {
                           >
                             Export
                           </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleViewSongs(artist.id)}
+                          >
+                            View Songs
+                          </DropdownMenuItem>{" "}
                         </DropdownMenuGroup>
                       </DropdownMenuContent>
                     </DropdownMenu>
