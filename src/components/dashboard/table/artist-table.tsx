@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -27,10 +28,12 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { deleteArtist, getArtists } from "@/api/artist";
+import { deleteArtist, getArtists, createArtist } from "@/api/artist";
 import { Input } from "../../ui/input";
 import { Artist } from "@/types/artist";
-import { Pagination as PaginationType } from "@/types/pagination"; // Ensure you have a Pagination type defined
+import { CreateArtistFormData } from "@/validations/artist";
+import ArtistCreateModal from "../modal/create-artist-modal";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
 
 const ArtistsTable: React.FC = () => {
   const router = useRouter();
@@ -43,6 +46,7 @@ const ArtistsTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(initialPage);
   const [limit] = useState<number>(initialLimit);
   const [search, setSearch] = useState<string>(initialSearch);
+  const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
 
   useEffect(() => {
     const params = new URLSearchParams({
@@ -72,7 +76,6 @@ const ArtistsTable: React.FC = () => {
       toast.error("Failed to delete artist");
     },
   });
-
   const handleDelete = (artistId: number) => {
     deleteArtistMutation(artistId);
   };
@@ -82,7 +85,7 @@ const ArtistsTable: React.FC = () => {
   };
 
   const handleCloseModal = () => {
-    setSelectedArtistId(null);
+    setShowCreateModal(false);
   };
 
   const handlePageChange = (page: number) => {
@@ -98,18 +101,27 @@ const ArtistsTable: React.FC = () => {
 
   return (
     <div>
-      {/* <ArtistUpdateModal
-        artistId={selectedArtistId}
-        onClose={handleCloseModal}
+      <ArtistCreateModal
+        isOpen={showCreateModal}
         refetchArtists={refetch}
-      /> */}
+        onClose={handleCloseModal}
+        // onSubmit={handleCreateArtist}
+      />
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-medium w-full">All Artists</h1>
-        <Input
-          value={search}
-          onChange={handleSearchChange}
-          placeholder="Search by name..."
-        />
+        <div className="flex gap-4 w-full">
+          <Input
+            value={search}
+            onChange={handleSearchChange}
+            placeholder="Search by name..."
+          />
+          <Button
+            onClick={() => setShowCreateModal(true)}
+            className="flex gap-2"
+          >
+            <PlusCircledIcon /> Create New Artist
+          </Button>
+        </div>
       </div>
       {isLoading ? (
         <div>Loading...</div>
@@ -135,7 +147,6 @@ const ArtistsTable: React.FC = () => {
                       ? new Date(artist.dob).toISOString().split("T")[0]
                       : "N/A"}
                   </TableCell>
-
                   <TableCell>{artist.address}</TableCell>
                   <TableCell>
                     {artist.first_release_year

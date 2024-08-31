@@ -1,3 +1,4 @@
+import { getArtistById } from "@/api/artist";
 import { getUserById, updateUser } from "@/api/user";
 
 export const mutationKeys = {
@@ -6,9 +7,12 @@ export const mutationKeys = {
   getAllUsers: "getAllUsers",
   deleteUser: "deleteUsers",
   updateUser: "updateUser",
+  createArtist: "createArtist",
+  updateArtist: "updateArtist",
 };
 
 export const queryKeys = {
   getAllUsers: "getAllUsers",
   getUserById: "getUserById",
+  getArtistById: "getArtistById",
 };

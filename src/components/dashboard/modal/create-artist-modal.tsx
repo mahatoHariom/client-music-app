@@ -1,11 +1,11 @@
 "use client";
-
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { getArtistById, updateArtistById } from "@/api/artist";
-import { mutationKeys, queryKeys } from "@/utils/mutation-keys";
+import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
+import { createArtist } from "@/api/artist"; // Ensure this API function exists
+import { mutationKeys } from "@/utils/mutation-keys";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -19,17 +19,18 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 import { CreateArtistFormData, createArtistSchema } from "@/validations/artist";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
-interface ArtistUpdateModalProps {
-  artistId: number | null;
+interface ArtistCreateModalProps {
+  isOpen: boolean;
   onClose: () => void;
   refetchArtists: () => void;
 }
 
-const ArtistUpdateModal: React.FC<ArtistUpdateModalProps> = ({
-  artistId,
+const ArtistCreateModal: React.FC<ArtistCreateModalProps> = ({
+  isOpen,
   onClose,
   refetchArtists,
 }) => {
@@ -43,30 +44,25 @@ const ArtistUpdateModal: React.FC<ArtistUpdateModalProps> = ({
     reset,
   } = form;
 
-  const { data: artist, refetch } = useQuery({
-    queryKey: [queryKeys.getArtistById, artistId],
-    queryFn: () => getArtistById(artistId!),
-    enabled: !!artistId,
-  });
-
   useEffect(() => {
-    if (artist) {
-      reset(artist);
+    if (!isOpen) {
+      reset();
     }
-  }, [artist, reset]);
+  }, [isOpen, reset]);
 
-  const { mutate: updateArtistMutation, isPending } = useMutation({
-    mutationKey: [mutationKeys.updateArtist],
-    mutationFn: (data: { id: number; artist: CreateArtistFormData }) =>
-      updateArtistById(data),
+  const { mutate: createArtistMutation, isPending } = useMutation({
+    mutationKey: [mutationKeys.createArtist],
+    mutationFn: createArtist,
     onSuccess: () => {
-      toast.success("Artist updated successfully");
+      toast.success("Artist created successfully");
       refetchArtists();
       onClose();
     },
     onError: (error: any) => {
-      if (error.response?.data) {
-        toast.error(error.response.data.message || "An error occurred");
+      if (error instanceof AxiosError) {
+        const message =
+          (error.response?.data as any)?.message || "An error occurred";
+        toast.error(message);
       } else {
         toast.error("An unexpected error occurred");
       }
@@ -74,16 +70,14 @@ const ArtistUpdateModal: React.FC<ArtistUpdateModalProps> = ({
   });
 
   const onSubmit = (data: CreateArtistFormData) => {
-    if (artistId) {
-      updateArtistMutation({ id: artistId, artist: data });
-    }
+    createArtistMutation(data);
   };
 
   return (
-    <Dialog open={!!artistId} onOpenChange={onClose}>
-      <DialogContent>
-        <DialogTitle>Update Artist</DialogTitle>
-        <Card className="w-full max-w-lg mx-auto my-4 p-8 shadow-lg">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className=" h-[80%] m-auto overflow-y-scroll">
+        <DialogTitle>Create New Artist</DialogTitle>
+        <Card className="w-full max-w-lg mx-auto my-4 p-8 shadow-lg ">
           <Form {...form}>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <FormField
@@ -122,6 +116,7 @@ const ArtistUpdateModal: React.FC<ArtistUpdateModalProps> = ({
                     <FormLabel>Gender</FormLabel>
                     <FormControl>
                       <select {...field} className="w-full border rounded p-2">
+                        <option value="">Select Gender</option>
                         <option value="M">Male</option>
                         <option value="F">Female</option>
                         <option value="O">Other</option>
@@ -190,7 +185,7 @@ const ArtistUpdateModal: React.FC<ArtistUpdateModalProps> = ({
                 {isPending && (
                   <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                {isPending ? "Updating..." : "Update"}
+                {isPending ? "Creating..." : "Create"}
               </Button>
             </form>
           </Form>
@@ -200,4 +195,4 @@ const ArtistUpdateModal: React.FC<ArtistUpdateModalProps> = ({
   );
 };
 
-export default ArtistUpdateModal;
+export default ArtistCreateModal;

@@ -1,6 +1,7 @@
 import api from "@/lib/axios-instance";
 import { Artist } from "@/types/artist";
 import { Pagination } from "@/types/pagination";
+import { CreateArtistFormData } from "@/validations/artist";
 
 interface GetArtistsResponse {
   artists: Artist[];
@@ -23,7 +24,7 @@ export const getArtistById = async (id: number) => {
   return data;
 };
 
-export const createArtist = async (artist: Artist) => {
+export const createArtist = async (artist: CreateArtistFormData) => {
   const { data } = await api.post(`/artist`, artist);
   return data;
 };
@@ -33,7 +34,7 @@ export const updateArtistById = async ({
   ...artist
 }: {
   id: number;
-  artist: Partial<Artist>;
+  artist: CreateArtistFormData;
 }): Promise<any> => {
   const { data } = await api.put(`/artist/update/${id}`, artist);
   return data;
