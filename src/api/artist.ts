@@ -47,3 +47,21 @@ export const deleteArtist = async (id: number) => {
   const { data } = await api.delete(`/artist/${id}`);
   return data;
 };
+
+export const exportArtist = async (artistId: number): Promise<Blob> => {
+  const { data } = await api.get(`/artist/download/${artistId}`, {
+    responseType: "blob",
+  });
+  return data;
+};
+
+export const exportAllArtist = async (): Promise<Blob> => {
+  const { data } = await api.get(`/artist/export/all`, {
+    responseType: "blob",
+  });
+  return data;
+};
+export const importArtists = async (formData: FormData): Promise<any> => {
+  const { data } = await api.post("/artist/upload", formData);
+  return data;
+};

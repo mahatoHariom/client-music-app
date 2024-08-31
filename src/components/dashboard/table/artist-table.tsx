@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { CiImport } from "react-icons/ci";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Table,
@@ -28,13 +29,21 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { deleteArtist, getArtists } from "@/api/artist";
+import {
+  deleteArtist,
+  getArtists,
+  // exportArtists,
+  importArtists,
+  exportArtist,
+  exportAllArtist,
+} from "@/api/artist";
 import { Input } from "../../ui/input";
 import { Artist } from "@/types/artist";
 import ArtistCreateModal from "../modal/create-artist-modal";
 
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import ArtistUpdateModal from "../modal/artist-update-modal";
+import { FaFileExport } from "react-icons/fa";
 
 const ArtistsTable: React.FC = () => {
   const router = useRouter();
@@ -108,6 +117,60 @@ const ArtistsTable: React.FC = () => {
     setCurrentPage(1);
   };
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImportClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleImportFile = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (event.target.files?.length) {
+      const formData = new FormData();
+      formData.append("file", event.target.files[0]);
+
+      try {
+        await importArtists(formData);
+        toast.success("Artists imported successfully");
+        refetch();
+      } catch (error) {
+        toast.error("Failed to import artists");
+      }
+    }
+  };
+
+  const handleExport = async (artistId: number) => {
+    try {
+      const data = await exportArtist(artistId);
+      const url = window.URL.createObjectURL(new Blob([data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `artist_${artistId}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+    } catch (error) {
+      toast.error("Failed to export artist data");
+    }
+  };
+
+  const handleExportAll = async () => {
+    try {
+      const data = await exportAllArtist();
+      const url = window.URL.createObjectURL(new Blob([data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "artists_all.csv");
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+    } catch (error) {
+      toast.error("Failed to export all artists");
+    }
+  };
   return (
     <div>
       <ArtistCreateModal
@@ -117,7 +180,6 @@ const ArtistsTable: React.FC = () => {
       />
       <ArtistUpdateModal
         artistId={selectedArtistId}
-        // isOpen={showUpdateModal}
         onClose={handleCloseUpdateModal}
         refetchArtists={refetch}
       />
@@ -128,19 +190,32 @@ const ArtistsTable: React.FC = () => {
             value={search}
             onChange={handleSearchChange}
             placeholder="Search by name..."
+            className="min-w-52"
           />
-          <Button
-            onClick={() => setShowCreateModal(true)}
-            className="flex gap-2"
-          >
-            <PlusCircledIcon /> Create New Artist
-          </Button>
         </div>
+      </div>
+      <div className="flex justify-end w-full items-end gap-10">
+        <Button onClick={handleImportClick} className="flex gap-2">
+          <CiImport /> Import Artists
+        </Button>
+        <Button onClick={handleExportAll} className="flex gap-2">
+          <FaFileExport /> Export Artists
+        </Button>
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleImportFile}
+          accept=".csv"
+          style={{ display: "none" }}
+        />
+        <Button onClick={() => setShowCreateModal(true)} className="flex gap-2">
+          <PlusCircledIcon /> Create New Artist
+        </Button>
       </div>
       {isLoading ? (
         <div>Loading...</div>
       ) : (
-        <div className="flex flex-col gap-5 min-h-96 h-full">
+        <div className="flex flex-col gap-5 min-h-96 h-full mt-5">
           <Table className="w-full border border-slate-100">
             <TableHeader>
               <TableRow>
@@ -186,6 +261,11 @@ const ArtistsTable: React.FC = () => {
                             onClick={() => handleDelete(artist.id)}
                           >
                             Delete
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleExport(artist.id)}
+                          >
+                            Export
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
                       </DropdownMenuContent>

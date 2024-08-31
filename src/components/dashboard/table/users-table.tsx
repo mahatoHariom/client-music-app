@@ -159,7 +159,7 @@ const UsersTable: React.FC = () => {
                   <TableCell>{user.last_name}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>
-                    {new Date(user.dob).toLocaleDateString()}
+                    {new Date(user.dob).toISOString().split("T")[0]}
                   </TableCell>
                   <TableCell>{user.phone}</TableCell>
                   <TableCell>{user.address}</TableCell>
