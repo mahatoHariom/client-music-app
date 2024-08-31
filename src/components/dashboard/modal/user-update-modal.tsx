@@ -96,7 +96,7 @@ const UserUpdateModal: React.FC<UserUpdateModalProps> = ({
 
   return (
     <Dialog open={!!userId} onOpenChange={onClose}>
-      <DialogContent className=" h-[80%] m-auto overflow-y-scroll p-10">
+      <DialogContent className=" h-[80%] m-auto overflow-y-scroll ">
         <DialogTitle className="text-center text-lg">Update User</DialogTitle>
 
         <Form {...form}>

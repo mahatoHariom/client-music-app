@@ -84,12 +84,15 @@ const UserCreateModal: React.FC<UserCreateModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className=" h-[80%] m-auto overflow-y-scroll p-10">
+      <DialogContent className=" h-fit ">
         <DialogTitle className="text-center text-lg">
           Create New User
         </DialogTitle>
         <Form {...form}>
-          <form onSubmit={handleSubmit(onSubmit)} className="">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col gap-3"
+          >
             <FormField
               control={form.control}
               name="first_name"

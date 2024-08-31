@@ -99,150 +99,144 @@ const ArtistUpdateModal: React.FC<ArtistUpdateModalProps> = ({
 
   return (
     <Dialog open={!!artistId} onOpenChange={onClose}>
-      <DialogContent>
-        <DialogTitle>Update Artist</DialogTitle>
-        <Card className="w-full max-w-lg mx-auto my-4 p-8 shadow-lg">
-          <Form {...form}>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Name" />
-                    </FormControl>
-                    <FormMessage>{errors.name?.message}</FormMessage>
-                  </FormItem>
-                )}
-              />
+      <DialogContent className=" h-auto">
+        <DialogTitle className="text-center text-lg">Update Artist</DialogTitle>
+        <Form {...form}>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Name" />
+                  </FormControl>
+                  <FormMessage>{errors.name?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={form.control}
-                name="dob"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Date of Birth</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(new Date(field.value), "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={
-                            field.value ? new Date(field.value) : undefined
-                          }
-                          onSelect={(date) => setValue("dob", date)}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage>{errors.dob?.message}</FormMessage>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="gender"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Gender</FormLabel>
-                    <FormControl>
-                      <select {...field} className="w-full border rounded p-2">
-                        <option value="M">Male</option>
-                        <option value="F">Female</option>
-                        <option value="O">Other</option>
-                      </select>
-                    </FormControl>
-                    <FormMessage>{errors.gender?.message}</FormMessage>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="first_release_year"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>First Released Year</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Year" type="number" />
-                    </FormControl>
-                    <FormMessage>
-                      {errors.first_release_year?.message}
-                    </FormMessage>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Address</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Address" />
-                    </FormControl>
-                    <FormMessage>{errors.address?.message}</FormMessage>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="no_of_albums_released"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>No. of Albums Released</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Number of Albums"
-                        type="number"
+            <FormField
+              control={form.control}
+              name="dob"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Date of Birth</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(new Date(field.value), "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={
+                          field.value ? new Date(field.value) : undefined
+                        }
+                        onSelect={(date) => setValue("dob", date)}
+                        disabled={(date) =>
+                          date > new Date() || date < new Date("1900-01-01")
+                        }
+                        initialFocus
                       />
-                    </FormControl>
-                    <FormMessage>
-                      {errors.no_of_albums_released?.message}
-                    </FormMessage>
-                  </FormItem>
-                )}
-              />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage>{errors.dob?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
 
-              <Button
-                type="submit"
-                className="mt-4 w-full"
-                disabled={isPending}
-              >
-                {isPending && (
-                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                {isPending ? "Updating..." : "Update"}
-              </Button>
-            </form>
-          </Form>
-        </Card>
+            <FormField
+              control={form.control}
+              name="gender"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Gender</FormLabel>
+                  <FormControl>
+                    <select {...field} className="w-full border rounded p-2">
+                      <option value="M">Male</option>
+                      <option value="F">Female</option>
+                      <option value="O">Other</option>
+                    </select>
+                  </FormControl>
+                  <FormMessage>{errors.gender?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="first_release_year"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>First Released Year</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Year" type="number" />
+                  </FormControl>
+                  <FormMessage>
+                    {errors.first_release_year?.message}
+                  </FormMessage>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Address</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Address" />
+                  </FormControl>
+                  <FormMessage>{errors.address?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="no_of_albums_released"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>No. of Albums Released</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Number of Albums"
+                      type="number"
+                    />
+                  </FormControl>
+                  <FormMessage>
+                    {errors.no_of_albums_released?.message}
+                  </FormMessage>
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" className="mt-4 w-full" disabled={isPending}>
+              {isPending && (
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {isPending ? "Updating..." : "Update"}
+            </Button>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
