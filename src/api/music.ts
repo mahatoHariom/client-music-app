@@ -17,11 +17,10 @@ export const getMusicByArtistId = async (
   return response.data;
 };
 
-export const createMusic = async (data: Music) => {
-  const response = await api.post("/music", data);
+export const createMusic = async (artist_id: number, data: Music) => {
+  const response = await api.post(`/music/artist/${artist_id}`, data);
   return response.data;
 };
-
 export const updateMusicById = async (data: { id: number } & Music) => {
   const response = await api.put(`/music/${data.id}`, data);
   return response.data;

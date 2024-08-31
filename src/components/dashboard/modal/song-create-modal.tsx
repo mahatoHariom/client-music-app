@@ -30,17 +30,21 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Music } from "@/types/music";
+import { createMusicSchema } from "@/validations/music";
+import { mutationKeys } from "@/utils/mutation-keys";
 
 interface SongCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
   refetchSongs: () => void;
+  artistId: number;
 }
 
 const SongCreateModal: React.FC<SongCreateModalProps> = ({
   isOpen,
   onClose,
   refetchSongs,
+  artistId,
 }) => {
   const form = useForm<Music>({
     resolver: zodResolver(createMusicSchema),
@@ -59,8 +63,8 @@ const SongCreateModal: React.FC<SongCreateModalProps> = ({
   }, [isOpen, reset]);
 
   const { mutate: createSong, isPending } = useMutation({
-    mutationKey: ["createMusic"],
-    mutationFn: createMusic,
+    mutationKey: [mutationKeys.createMusic],
+    mutationFn: (data: Music) => createMusic(artistId, data),
     onSuccess: () => {
       toast.success("Song created successfully");
       refetchSongs();

@@ -9,6 +9,8 @@ export const mutationKeys = {
   updateUser: "updateUser",
   createArtist: "createArtist",
   updateArtist: "updateArtist",
+  createMusic: "createMusic",
+  updateMusic: "updateMusic",
 };
 
 export const queryKeys = {

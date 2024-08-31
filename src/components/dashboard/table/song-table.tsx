@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/pagination";
 import { Input } from "@/components/ui/input";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
+import SongCreateModal from "../modal/song-create-modal";
 
 interface SongTableProps {
   artistId: number;
@@ -57,11 +58,10 @@ const SongsTable: React.FC<SongTableProps> = ({ artistId }) => {
   } = useQuery({
     queryKey: ["music", artistId, search],
     queryFn: () => getMusicByArtistId(Number(artistId), search),
-    // keepPreviousData: true,
   });
 
   const { mutate: createMusicMutation } = useMutation({
-    mutationFn: createMusic,
+    mutationFn: (data: Music) => createMusic(artistId, data),
     onSuccess: () => {
       toast.success("Music created successfully");
       refetch();
@@ -119,19 +119,13 @@ const SongsTable: React.FC<SongTableProps> = ({ artistId }) => {
 
   return (
     <div>
-      {/* <MusicCreateModal
+      <SongCreateModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        onCreate={handleCreate}
+        refetchSongs={refetch}
+        artistId={artistId}
       />
-      <MusicUpdateModal
-        musicId={selectedMusicId}
-        isOpen={showUpdateModal}
-        onClose={() => setShowUpdateModal(false)}
-        onUpdate={(data) =>
-          updateMusicMutation({ ...data, id: selectedMusicId })
-        }
-      /> */}
+
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-medium">All Songs</h1>
         <div className="flex items-center">
