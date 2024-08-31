@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/pagination";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { deleteArtist, getArtists } from "@/api/artist";
-import { Input } from "../ui/input";
+import { Input } from "../../ui/input";
 import { Artist } from "@/types/artist";
 import { Pagination as PaginationType } from "@/types/pagination"; // Ensure you have a Pagination type defined
 
@@ -93,7 +93,7 @@ const ArtistsTable: React.FC = () => {
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
-    setCurrentPage(1); // Reset to first page on search change
+    setCurrentPage(1);
   };
 
   return (
@@ -128,8 +128,7 @@ const ArtistsTable: React.FC = () => {
               {artistsData?.artists.map((artist: Artist) => (
                 <TableRow key={artist.id}>
                   <TableCell>{artist.name}</TableCell>
-                  {/* Uncomment and adjust as needed */}
-                  {/* <TableCell>{artist.dob ? new Date(artist.dob).toLocaleDateString() : "N/A"}</TableCell> */}
+
                   <TableCell>{artist.gender}</TableCell>
                   <TableCell>
                     <DropdownMenu>
@@ -163,7 +162,6 @@ const ArtistsTable: React.FC = () => {
               <PaginationItem>
                 <PaginationPrevious
                   onClick={() => handlePageChange(currentPage - 1)}
-                  // disabled={currentPage === 1}
                 />
               </PaginationItem>
               {[...Array(artistsData?.pagination.totalPages || 0)].map(

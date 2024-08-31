@@ -29,9 +29,9 @@ import {
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { mutationKeys, queryKeys } from "@/utils/mutation-keys";
 import { deleteUser, getUsers } from "@/api/user";
-import UserUpdateModal from "./modal/user-update-modal";
+import UserUpdateModal from "../modal/user-update-modal";
 import { User } from "@/types/user";
-import { Input } from "../ui/input";
+import { Input } from "../../ui/input";
 
 const UsersTable: React.FC = () => {
   const router = useRouter();

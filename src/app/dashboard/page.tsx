@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import UsersTable from "@/components/dashboard/users-table";
+import UsersTable from "@/components/dashboard/table/users-table";
 import ArtistsContent from "@/components/dashboard/artist-table";
 
 const DashboardPage: React.FC = () => {
