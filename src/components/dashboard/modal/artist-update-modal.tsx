@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { addHours, format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import {
   Popover,
   PopoverContent,
@@ -27,12 +27,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { toast } from "sonner";
-import {
-  CreateArtistFormData,
-  createArtistSchema,
-  UpdateArtistFormData,
-  updateArtistSchema,
-} from "@/validations/artist";
+import { UpdateArtistFormData, updateArtistSchema } from "@/validations/artist";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 interface ArtistUpdateModalProps {
@@ -54,6 +49,7 @@ const ArtistUpdateModal: React.FC<ArtistUpdateModalProps> = ({
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = form;
 
   const { data: artist, refetch } = useQuery({
@@ -82,19 +78,21 @@ const ArtistUpdateModal: React.FC<ArtistUpdateModalProps> = ({
 
   useEffect(() => {
     if (artist) {
-      reset({
-        name: artist.data.name,
-        dob: artist.data.dob,
-        gender: artist.data.gender,
+      const artistData = {
+        ...artist.data,
+        dob: artist.data.dob ? new Date(artist.data.dob) : null,
         first_release_year: artist.data.first_release_year?.toString(),
-        address: artist.data.address,
         no_of_albums_released: artist.data.no_of_albums_released.toString(),
-      });
+      };
+      reset(artistData);
     }
   }, [artist, reset]);
 
   const onSubmit = (data: UpdateArtistFormData) => {
     if (artistId) {
+      if (typeof data.dob === "string") {
+        data.dob = new Date(data.dob);
+      }
       updateArtistMutation({ id: artistId, artist: data });
     }
   };
@@ -137,7 +135,7 @@ const ArtistUpdateModal: React.FC<ArtistUpdateModalProps> = ({
                             )}
                           >
                             {field.value ? (
-                              format(field.value, "PPP")
+                              format(new Date(field.value), "PPP")
                             ) : (
                               <span>Pick a date</span>
                             )}
@@ -148,8 +146,10 @@ const ArtistUpdateModal: React.FC<ArtistUpdateModalProps> = ({
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
+                          selected={
+                            field.value ? new Date(field.value) : undefined
+                          }
+                          onSelect={(date) => setValue("dob", date)}
                           disabled={(date) =>
                             date > new Date() || date < new Date("1900-01-01")
                           }
@@ -161,6 +161,7 @@ const ArtistUpdateModal: React.FC<ArtistUpdateModalProps> = ({
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="gender"
