@@ -5,6 +5,7 @@ import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Providers from "@/lib/providers";
+import { Navbar } from "@/components/navbar";
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -30,9 +31,7 @@ export default function RootLayout({
       >
         <Providers>
           <div className="flex w-full flex-col gap-10">
-            <h1 className="text-4xl text-center font-medium mt-10">
-              Artist Management System
-            </h1>
+            <Navbar />
             {children}
           </div>
         </Providers>

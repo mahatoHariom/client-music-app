@@ -47,7 +47,7 @@ const LoginPage: React.FC = () => {
       toast.success("Logged in successfully");
       Cookies.set("accessToken", data.accessToken, { expires: 1 });
       Cookies.set("refreshToken", data.refreshToken, { expires: 7 });
-      dispatch(setUser(data.user));
+      dispatch(setUser(data.userWithoutPassword));
       router.push("/dashboard");
     },
     onError: (error) => {
