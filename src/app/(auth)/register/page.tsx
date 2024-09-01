@@ -30,9 +30,11 @@ import {
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
+import Link from "next/link";
 
 const RegisterPage: React.FC = () => {
   const router = useRouter();
+
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   });
@@ -60,7 +62,7 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <Card className="w-full max-w-lg mx-auto my-12 p-8 shadow-lg">
+    <Card className="w-full max-w-2xl mx-auto  p-8 shadow-lg">
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <h1 className="text-sky-600 text-center text-2xl font-bold">
@@ -217,6 +219,9 @@ const RegisterPage: React.FC = () => {
           </Button>
         </form>
       </Form>
+      <Link href={"/login"} className="p-2 pt-2 text-primary ">
+        Already have an account? Login
+      </Link>
     </Card>
   );
 };

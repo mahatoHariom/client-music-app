@@ -40,6 +40,7 @@ import { PlusCircledIcon } from "@radix-ui/react-icons";
 import SongCreateModal from "../modal/song-create-modal";
 import SongUpdateModal from "../modal/song-update-modal"; // Import the update modal
 import { useTable } from "@/hooks/use-table";
+import CustomPagination from "@/components/pagination-component";
 
 interface SongTableProps {
   artistId: number;
@@ -217,35 +218,11 @@ const SongsTable: React.FC<SongTableProps> = ({ artistId }) => {
           </Table>
 
           <div className="mt-4">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    // disabled={currentPage === 1}
-                  />
-                </PaginationItem>
-                {[...Array(musicData?.pagination.totalPages || 0)].map(
-                  (_, index) => (
-                    <PaginationItem key={index}>
-                      <PaginationLink
-                        href="#"
-                        isActive={currentPage === index + 1}
-                        onClick={() => handlePageChange(index + 1)}
-                      >
-                        {index + 1}
-                      </PaginationLink>
-                    </PaginationItem>
-                  )
-                )}
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    // disabled={currentPage === (musicData?.pagination.totalPages || 0)}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+            <CustomPagination
+              currentPage={currentPage}
+              totalPages={musicData?.pagination.totalPages || 0}
+              onPageChange={handlePageChange}
+            />
           </div>
         </>
       )}

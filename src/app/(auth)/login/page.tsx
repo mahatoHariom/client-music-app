@@ -25,6 +25,7 @@ import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/slices/auth-slice";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const LoginPage: React.FC = () => {
   const form = useForm<LoginFormData>({
@@ -60,7 +61,7 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <Card className="w-full max-w-lg mx-auto my-12 p-8 shadow-lg">
+    <Card className="w-full max-w-lg mx-auto p-8 shadow-lg">
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <h1 className="text-sky-600 text-center text-2xl font-bold">Login</h1>
@@ -98,6 +99,9 @@ const LoginPage: React.FC = () => {
           </Button>
         </form>
       </Form>
+      <Link href={"/register"} className="p-2  text-primary mt-2">
+        {`Don't have an account ? Register`}
+      </Link>
     </Card>
   );
 };

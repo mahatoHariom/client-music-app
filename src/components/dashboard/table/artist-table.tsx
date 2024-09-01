@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { CiImport } from "react-icons/ci";
 import { FaFileExport } from "react-icons/fa";
 import {
@@ -20,14 +20,7 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import CustomPagination from "@/components/pagination-component";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   deleteArtist,
@@ -72,7 +65,6 @@ const ArtistsTable: React.FC<ArtistsTableProps> = ({
 
   const [selectedArtistId, setSelectedArtistId] = useState<number | null>(null);
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
-  // const [showUpdateModal, setShowUpdateModal] = useState<boolean>(false);
 
   const {
     data: artistsData,
@@ -94,50 +86,52 @@ const ArtistsTable: React.FC<ArtistsTableProps> = ({
     },
   });
 
-  const handleDelete = (artistId: number) => {
-    deleteArtistMutation(artistId);
-  };
+  const handleDelete = useCallback(
+    (artistId: number) => {
+      deleteArtistMutation(artistId);
+    },
+    [deleteArtistMutation]
+  );
 
-  const handleUpdate = (artistId: number) => {
+  const handleUpdate = useCallback((artistId: number) => {
     setSelectedArtistId(artistId);
-    // setShowUpdateModal(true);
-  };
+  }, []);
 
-  const handleCloseCreateModal = () => {
+  const handleCloseCreateModal = useCallback(() => {
     setShowCreateModal(false);
-  };
+  }, []);
 
-  const handleCloseUpdateModal = () => {
-    // setShowUpdateModal(false);
+  const handleCloseUpdateModal = useCallback(() => {
     setSelectedArtistId(null);
-  };
+  }, []);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleImportClick = () => {
+  const handleImportClick = useCallback(() => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
-  };
+  }, []);
 
-  const handleImportFile = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (event.target.files?.length) {
-      const formData = new FormData();
-      formData.append("file", event.target.files[0]);
+  const handleImportFile = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.target.files?.length) {
+        const formData = new FormData();
+        formData.append("file", event.target.files[0]);
 
-      try {
-        await importArtists(formData);
-        toast.success("Artists imported successfully");
-        refetch();
-      } catch (error) {
-        toast.error("Failed to import artists");
+        try {
+          await importArtists(formData);
+          toast.success("Artists imported successfully");
+          refetch();
+        } catch (error) {
+          toast.error("Failed to import artists");
+        }
       }
-    }
-  };
+    },
+    [refetch]
+  );
 
-  const handleExport = async (artistId: number) => {
+  const handleExport = useCallback(async (artistId: number) => {
     try {
       const data = await exportArtist(artistId);
       const url = window.URL.createObjectURL(new Blob([data]));
@@ -150,9 +144,9 @@ const ArtistsTable: React.FC<ArtistsTableProps> = ({
     } catch (error) {
       toast.error("Failed to export artist data");
     }
-  };
+  }, []);
 
-  const handleExportAll = async () => {
+  const handleExportAll = useCallback(async () => {
     try {
       const data = await exportAllArtist();
       const url = window.URL.createObjectURL(new Blob([data]));
@@ -165,7 +159,7 @@ const ArtistsTable: React.FC<ArtistsTableProps> = ({
     } catch (error) {
       toast.error("Failed to export all artists");
     }
-  };
+  }, []);
 
   return (
     <div>
@@ -280,33 +274,11 @@ const ArtistsTable: React.FC<ArtistsTableProps> = ({
           </Table>
 
           {/* Pagination */}
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => handlePageChange(currentPage - 1)}
-                />
-              </PaginationItem>
-              {[...Array(artistsData?.pagination.totalPages || 0)].map(
-                (_, index) => (
-                  <PaginationItem key={index}>
-                    <PaginationLink
-                      href="#"
-                      isActive={currentPage === index + 1}
-                      onClick={() => handlePageChange(index + 1)}
-                    >
-                      {index + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                )
-              )}
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() => handlePageChange(currentPage + 1)}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+          <CustomPagination
+            currentPage={currentPage}
+            totalPages={artistsData?.pagination.totalPages || 0}
+            onPageChange={handlePageChange}
+          />
         </div>
       )}
     </div>

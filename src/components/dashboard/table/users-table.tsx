@@ -34,6 +34,7 @@ import { Input } from "../../ui/input";
 import UserCreateModal from "../modal/user-create-modal";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { useTable } from "@/hooks/use-table";
+import CustomPagination from "@/components/pagination-component";
 
 interface UsersTableProps {
   initialPage: number;
@@ -183,34 +184,11 @@ const UsersTable: React.FC<UsersTableProps> = ({
           </Table>
 
           {/* Pagination */}
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => handlePageChange(currentPage - 1)}
-                />
-              </PaginationItem>
-              {usersData?.pagination.totalPages &&
-                [...Array(usersData.pagination.totalPages)].map((_, index) => (
-                  <PaginationItem key={index}>
-                    <PaginationLink
-                      href="#"
-                      isActive={currentPage === index + 1}
-                      onClick={() => handlePageChange(index + 1)}
-                    >
-                      {index + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
-              <PaginationItem>
-                {currentPage !== usersData?.pagination.totalPages && (
-                  <PaginationNext
-                    onClick={() => handlePageChange(currentPage + 1)}
-                  />
-                )}
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+          <CustomPagination
+            currentPage={currentPage}
+            totalPages={usersData?.pagination.totalPages || 0}
+            onPageChange={handlePageChange}
+          />
         </div>
       )}
     </div>
