@@ -27,7 +27,7 @@ const handleTokenError = () => {
   window.location.href = "/login";
 };
 
-// Handle the queue after refreshing token
+
 const handleQueue = (error?: any) => {
   while (refreshQueue.length) {
     const { resolve, reject } = refreshQueue.shift()!;
