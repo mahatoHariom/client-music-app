@@ -27,6 +27,8 @@ import { Input } from "../../ui/input";
 import UserCreateModal from "../modal/user-create-modal";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { useTable } from "@/hooks/use-table";
+import LoadingSkeleton from "@/components/loading-skeleton";
+import EmptyState from "@/components/empty-state";
 
 interface UsersTableProps {
   initialPage: number;
@@ -93,6 +95,8 @@ const UsersTable: React.FC<UsersTableProps> = ({
     setIsCreateModalOpen(false);
   }, []);
 
+  console.log(usersData?.users, "le");
+
   return (
     <div>
       {/* User Update Modal */}
@@ -124,7 +128,9 @@ const UsersTable: React.FC<UsersTableProps> = ({
         </div>
       </div>
       {isLoading ? (
-        <div>Loading...</div>
+        <LoadingSkeleton />
+      ) : usersData?.users?.length === 0 || usersData?.users === undefined ? (
+        <EmptyState />
       ) : (
         <div className="flex flex-col gap-5 min-h-96 h-full">
           <Table className="w-full border border-slate-100">

@@ -36,6 +36,8 @@ import ArtistUpdateModal from "../modal/artist-update-modal";
 import { useTable } from "@/hooks/use-table";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
+import LoadingSkeleton from "@/components/loading-skeleton";
+import EmptyState from "@/components/empty-state";
 
 interface ArtistsTableProps {
   initialPage: number;
@@ -203,7 +205,10 @@ const ArtistsTable: React.FC<ArtistsTableProps> = ({
         </Button>
       </div>
       {isLoading ? (
-        <div>Loading...</div>
+        <LoadingSkeleton />
+      ) : artistsData?.artists?.length === 0 ||
+        artistsData?.artists === undefined ? (
+        <EmptyState />
       ) : (
         <div className="flex flex-col gap-5 min-h-96 h-full mt-5">
           <Table className="w-full border border-slate-100">

@@ -33,6 +33,8 @@ import SongCreateModal from "../modal/song-create-modal";
 import SongUpdateModal from "../modal/song-update-modal";
 import { useTable } from "@/hooks/use-table";
 import CustomPagination from "@/components/pagination-component";
+import LoadingSkeleton from "@/components/loading-skeleton";
+import EmptyState from "@/components/empty-state";
 
 interface SongTableProps {
   artistId: number;
@@ -154,7 +156,9 @@ const SongsTable: React.FC<SongTableProps> = ({ artistId }) => {
         </div>
       </div>
       {isLoading ? (
-        <div>Loading...</div>
+        <LoadingSkeleton />
+      ) : musicData?.data?.length === 0 || musicData?.data === undefined ? (
+        <EmptyState />
       ) : (
         <>
           <Table className="w-full border border-slate-100">
