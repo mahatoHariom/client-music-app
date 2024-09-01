@@ -39,6 +39,7 @@ import { Input } from "@/components/ui/input";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import SongCreateModal from "../modal/song-create-modal";
 import SongUpdateModal from "../modal/song-update-modal"; // Import the update modal
+import { useTable } from "@/hooks/use-table";
 
 interface SongTableProps {
   artistId: number;
@@ -52,8 +53,13 @@ const SongsTable: React.FC<SongTableProps> = ({ artistId }) => {
   const [selectedMusicId, setSelectedMusicId] = useState<number | null>(null);
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
   const [showUpdateModal, setShowUpdateModal] = useState<boolean>(false);
-  const [search, setSearch] = useState<string>(initialSearch);
-  const [currentPage, setCurrentPage] = useState<number>(initialPage);
+
+  const { currentPage, limit, search, handlePageChange, handleSearchChange } =
+    useTable({
+      initialPage,
+      initialLimit: 5,
+      initialSearch,
+    });
 
   useEffect(() => {
     const params = new URLSearchParams({
@@ -83,17 +89,6 @@ const SongsTable: React.FC<SongTableProps> = ({ artistId }) => {
     },
   });
 
-  const { mutate: updateMusicMutation } = useMutation({
-    mutationFn: updateMusicById,
-    onSuccess: () => {
-      toast.success("Music updated successfully");
-      refetch();
-    },
-    onError: () => {
-      toast.error("Failed to update music");
-    },
-  });
-
   const { mutate: deleteMusicMutation } = useMutation({
     mutationFn: deleteMusicById,
     onSuccess: () => {
@@ -119,14 +114,14 @@ const SongsTable: React.FC<SongTableProps> = ({ artistId }) => {
     deleteMusicMutation(musicId);
   };
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+  // const handlePageChange = (page: number) => {
+  //   setCurrentPage(page);
+  // };
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(event.target.value);
-    setCurrentPage(1);
-  };
+  // const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setSearch(event.target.value);
+  //   setCurrentPage(1);
+  // };
 
   return (
     <div>

@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { CiImport } from "react-icons/ci";
-import { useRouter, useSearchParams } from "next/navigation";
+import { FaFileExport } from "react-icons/fa";
 import {
   Table,
   TableBody,
@@ -32,7 +32,6 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   deleteArtist,
   getArtists,
-  // exportArtists,
   importArtists,
   exportArtist,
   exportAllArtist,
@@ -40,36 +39,40 @@ import {
 import { Input } from "../../ui/input";
 import { Artist } from "@/types/artist";
 import ArtistCreateModal from "../modal/create-artist-modal";
-
-import { PlusCircledIcon } from "@radix-ui/react-icons";
 import ArtistUpdateModal from "../modal/artist-update-modal";
-import { FaFileExport } from "react-icons/fa";
+import { useTable } from "@/hooks/use-table";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
+import { useRouter } from "next/navigation";
 
-const ArtistsTable: React.FC = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const initialPage = Number(searchParams.get("page")) || 1;
-  const initialLimit = Number(searchParams.get("limit")) || 5;
-  const initialSearch = searchParams.get("search") || "";
+interface ArtistsTableProps {
+  initialPage: number;
+  initialLimit: number;
+  initialSearch: string;
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
+}
 
-  const [selectedArtistId, setSelectedArtistId] = useState<number | null>(null);
-  const [currentPage, setCurrentPage] = useState<number>(initialPage);
-  const [limit] = useState<number>(initialLimit);
-  const [search, setSearch] = useState<string>(initialSearch);
-  const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
-  const [showUpdateModal, setShowUpdateModal] = useState<boolean>(false);
-  const handleViewSongs = (artistId: number) => {
-    router.push(`/dashboard/artist/${artistId}`);
-  };
+const ArtistsTable: React.FC<ArtistsTableProps> = ({
+  initialPage,
+  initialLimit,
+  initialSearch,
+  setSearch,
+}) => {
+  const { currentPage, limit, search, handlePageChange, handleSearchChange } =
+    useTable({
+      initialPage,
+      initialLimit,
+      initialSearch,
+    });
 
   useEffect(() => {
-    const params = new URLSearchParams({
-      page: String(currentPage),
-      limit: String(limit),
-      search,
-    });
-    router.push(`?${params.toString()}`);
-  }, [currentPage, limit, search, router]);
+    setSearch(search);
+  }, [search, setSearch]);
+
+  const router = useRouter();
+
+  const [selectedArtistId, setSelectedArtistId] = useState<number | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
+  // const [showUpdateModal, setShowUpdateModal] = useState<boolean>(false);
 
   const {
     data: artistsData,
@@ -97,7 +100,7 @@ const ArtistsTable: React.FC = () => {
 
   const handleUpdate = (artistId: number) => {
     setSelectedArtistId(artistId);
-    setShowUpdateModal(true);
+    // setShowUpdateModal(true);
   };
 
   const handleCloseCreateModal = () => {
@@ -105,19 +108,8 @@ const ArtistsTable: React.FC = () => {
   };
 
   const handleCloseUpdateModal = () => {
-    setShowUpdateModal(false);
+    // setShowUpdateModal(false);
     setSelectedArtistId(null);
-  };
-
-  const handlePageChange = (page: number) => {
-    if (page > 0 && page <= (artistsData?.pagination.totalPages || 1)) {
-      setCurrentPage(page);
-    }
-  };
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(event.target.value);
-    setCurrentPage(1);
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -174,6 +166,7 @@ const ArtistsTable: React.FC = () => {
       toast.error("Failed to export all artists");
     }
   };
+
   return (
     <div>
       <ArtistCreateModal
@@ -271,10 +264,12 @@ const ArtistsTable: React.FC = () => {
                             Export
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() => handleViewSongs(artist.id)}
+                            onClick={() =>
+                              router.push(`/dashboard/artist/${artist.id}`)
+                            }
                           >
                             View Songs
-                          </DropdownMenuItem>{" "}
+                          </DropdownMenuItem>
                         </DropdownMenuGroup>
                       </DropdownMenuContent>
                     </DropdownMenu>

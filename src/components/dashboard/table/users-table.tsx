@@ -1,6 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -34,27 +33,30 @@ import { User } from "@/types/user";
 import { Input } from "../../ui/input";
 import UserCreateModal from "../modal/user-create-modal";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
+import { useTable } from "@/hooks/use-table";
 
-const UsersTable: React.FC = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const initialPage = Number(searchParams.get("page")) || 1;
-  const initialLimit = Number(searchParams.get("limit")) || 5;
-  const initialSearch = searchParams.get("search") || "";
+interface UsersTableProps {
+  initialPage: number;
+  initialLimit: number;
+  initialSearch: string;
+  // setSearch: (value: string) => void;
+}
+
+const UsersTable: React.FC<UsersTableProps> = ({
+  initialPage,
+  initialLimit,
+  initialSearch,
+  // setSearch,
+}) => {
+  const { currentPage, limit, search, handlePageChange, handleSearchChange } =
+    useTable({
+      initialPage,
+      initialLimit,
+      initialSearch,
+    });
+
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
-  const [currentPage, setCurrentPage] = useState<number>(initialPage);
-  const [limit] = useState<number>(initialLimit);
-  const [search, setSearch] = useState<string>(initialSearch);
-
-  useEffect(() => {
-    const params = new URLSearchParams({
-      page: String(currentPage),
-      limit: String(limit),
-      search,
-    });
-    router.push(`?${params.toString()}`);
-  }, [currentPage, limit, search, router]);
 
   const {
     data: usersData,
@@ -95,15 +97,6 @@ const UsersTable: React.FC = () => {
 
   const handleCloseCreateModal = () => {
     setIsCreateModalOpen(false);
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(event.target.value);
-    setCurrentPage(1);
   };
 
   return (
