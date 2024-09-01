@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Table,
@@ -27,18 +27,10 @@ import {
   deleteMusicById,
 } from "@/api/music";
 import { Music } from "@/types/music";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import { Input } from "@/components/ui/input";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import SongCreateModal from "../modal/song-create-modal";
-import SongUpdateModal from "../modal/song-update-modal"; // Import the update modal
+import SongUpdateModal from "../modal/song-update-modal";
 import { useTable } from "@/hooks/use-table";
 import CustomPagination from "@/components/pagination-component";
 
@@ -101,41 +93,46 @@ const SongsTable: React.FC<SongTableProps> = ({ artistId }) => {
     },
   });
 
-  const handleCreate = (musicData: any) => {
-    createMusicMutation(musicData);
-    setShowCreateModal(false);
-  };
+  const handleCreate = useCallback(
+    (musicData: any) => {
+      createMusicMutation(musicData);
+      setShowCreateModal(false);
+    },
+    [createMusicMutation]
+  );
 
-  const handleUpdate = (musicId: number) => {
+  const handleUpdate = useCallback((musicId: number) => {
     setSelectedMusicId(musicId);
     setShowUpdateModal(true);
-  };
+  }, []);
 
-  const handleDelete = (musicId: number) => {
-    deleteMusicMutation(musicId);
-  };
+  const handleDelete = useCallback(
+    (musicId: number) => {
+      deleteMusicMutation(musicId);
+    },
+    [deleteMusicMutation]
+  );
 
-  // const handlePageChange = (page: number) => {
-  //   setCurrentPage(page);
-  // };
+  const handleCloseCreateModal = useCallback(() => {
+    setShowCreateModal(false);
+  }, []);
 
-  // const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setSearch(event.target.value);
-  //   setCurrentPage(1);
-  // };
+  const handleCloseUpdateModal = useCallback(() => {
+    setShowUpdateModal(false);
+  }, []);
 
   return (
     <div>
       <SongCreateModal
         isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
+        onClose={handleCloseCreateModal}
         refetchSongs={refetch}
         artistId={artistId}
       />
 
       <SongUpdateModal
         isOpen={showUpdateModal}
-        onClose={() => setShowUpdateModal(false)}
+        onClose={handleCloseUpdateModal}
         refetchSongs={refetch}
         artistId={artistId}
         musicId={selectedMusicId!}
