@@ -18,34 +18,47 @@ const CustomPagination: React.FC<PaginationProps> = ({
   currentPage,
   totalPages,
   onPageChange,
-}) => (
-  <Pagination>
-    <PaginationContent>
-      <PaginationItem>
-        <PaginationPrevious
-          onClick={() => onPageChange(currentPage - 1)}
-          // disabled={currentPage === 1}
-        />
-      </PaginationItem>
-      {[...Array(totalPages)].map((_, index) => (
-        <PaginationItem key={index}>
-          <PaginationLink
-            href="#"
-            isActive={currentPage === index + 1}
-            onClick={() => onPageChange(index + 1)}
-          >
-            {index + 1}
-          </PaginationLink>
-        </PaginationItem>
-      ))}
-      <PaginationItem>
-        <PaginationNext
-          onClick={() => onPageChange(currentPage + 1)}
-          // disabled={currentPage === totalPages}
-        />
-      </PaginationItem>
-    </PaginationContent>
-  </Pagination>
-);
+}) => {
+  const noPages = totalPages === 0;
+
+  const isPreviousDisabled = currentPage === 1 || noPages;
+
+  const isNextDisabled = currentPage === totalPages || noPages;
+
+  return (
+    <Pagination>
+      <PaginationContent>
+        {!isPreviousDisabled && (
+          <PaginationItem>
+            <PaginationPrevious
+              onClick={() =>
+                !isPreviousDisabled && onPageChange(currentPage - 1)
+              }
+            />
+          </PaginationItem>
+        )}
+
+        {[...Array(totalPages)].map((_, index) => (
+          <PaginationItem key={index}>
+            <PaginationLink
+              href="#"
+              isActive={currentPage === index + 1}
+              onClick={() => !noPages && onPageChange(index + 1)}
+            >
+              {index + 1}
+            </PaginationLink>
+          </PaginationItem>
+        ))}
+        {!isNextDisabled && (
+          <PaginationItem>
+            <PaginationNext
+              onClick={() => !isNextDisabled && onPageChange(currentPage + 1)}
+            />
+          </PaginationItem>
+        )}
+      </PaginationContent>
+    </Pagination>
+  );
+};
 
 export default CustomPagination;

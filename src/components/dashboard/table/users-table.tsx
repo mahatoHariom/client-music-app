@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -17,14 +17,7 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import CustomPagination from "@/components/pagination-component";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { mutationKeys, queryKeys } from "@/utils/mutation-keys";
 import { deleteUser, getUsers } from "@/api/user";
@@ -34,20 +27,17 @@ import { Input } from "../../ui/input";
 import UserCreateModal from "../modal/user-create-modal";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { useTable } from "@/hooks/use-table";
-import CustomPagination from "@/components/pagination-component";
 
 interface UsersTableProps {
   initialPage: number;
   initialLimit: number;
   initialSearch: string;
-  // setSearch: (value: string) => void;
 }
 
 const UsersTable: React.FC<UsersTableProps> = ({
   initialPage,
   initialLimit,
   initialSearch,
-  // setSearch,
 }) => {
   const { currentPage, limit, search, handlePageChange, handleSearchChange } =
     useTable({
@@ -80,25 +70,28 @@ const UsersTable: React.FC<UsersTableProps> = ({
     },
   });
 
-  const handleDelete = (userId: number) => {
-    deleteUserMutation(userId);
-  };
+  const handleDelete = useCallback(
+    (userId: number) => {
+      deleteUserMutation(userId);
+    },
+    [deleteUserMutation]
+  );
 
-  const handleUpdate = (userId: number) => {
+  const handleUpdate = useCallback((userId: number) => {
     setSelectedUserId(userId);
-  };
+  }, []);
 
-  const handleCloseUpdateModal = () => {
+  const handleCloseUpdateModal = useCallback(() => {
     setSelectedUserId(null);
-  };
+  }, []);
 
-  const handleOpenCreateModal = () => {
+  const handleOpenCreateModal = useCallback(() => {
     setIsCreateModalOpen(true);
-  };
+  }, []);
 
-  const handleCloseCreateModal = () => {
+  const handleCloseCreateModal = useCallback(() => {
     setIsCreateModalOpen(false);
-  };
+  }, []);
 
   return (
     <div>
