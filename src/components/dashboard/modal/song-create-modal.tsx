@@ -3,7 +3,6 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { createMusic } from "@/api/music";
 import { Button } from "@/components/ui/button";
@@ -17,18 +16,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+
 import { Music } from "@/types/music";
 import { createMusicSchema } from "@/validations/music";
 import { mutationKeys } from "@/utils/mutation-keys";
@@ -87,73 +79,70 @@ const SongCreateModal: React.FC<SongCreateModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="h-[80%] m-auto overflow-y-scroll">
-        <DialogTitle>Create New Song</DialogTitle>
-        <Card className="w-full max-w-lg mx-auto my-4 p-8 shadow-lg">
-          <Form {...form}>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Title" />
-                    </FormControl>
-                    <FormMessage>{errors.title?.message}</FormMessage>
-                  </FormItem>
-                )}
-              />
+      <DialogContent className=" h-auto">
+        <DialogTitle className="text-center text-lg">
+          Create New Song
+        </DialogTitle>
 
-              <FormField
-                control={form.control}
-                name="album_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Album Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Album Name" />
-                    </FormControl>
-                    <FormMessage>{errors.album_name?.message}</FormMessage>
-                  </FormItem>
-                )}
-              />
+        <Form {...form}>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Title" />
+                  </FormControl>
+                  <FormMessage>{errors.title?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={form.control}
-                name="genre"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Genre</FormLabel>
-                    <FormControl>
-                      <select {...field} className="w-full border rounded p-2">
-                        <option value="">Select Genre</option>
-                        <option value="rnb">R&B</option>
-                        <option value="country">Country</option>
-                        <option value="classic">Classic</option>
-                        <option value="rock">Rock</option>
-                        <option value="jazz">Jazz</option>
-                      </select>
-                    </FormControl>
-                    <FormMessage>{errors.genre?.message}</FormMessage>
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={form.control}
+              name="album_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Album Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Album Name" />
+                  </FormControl>
+                  <FormMessage>{errors.album_name?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
 
-              <Button
-                type="submit"
-                className="mt-4 w-full"
-                disabled={isPending}
-              >
-                {isPending && (
-                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                {isPending ? "Creating..." : "Create"}
-              </Button>
-            </form>
-          </Form>
-        </Card>
+            <FormField
+              control={form.control}
+              name="genre"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Genre</FormLabel>
+                  <FormControl>
+                    <select {...field} className="w-full border rounded p-2">
+                      <option value="">Select Genre</option>
+                      <option value="rnb">R&B</option>
+                      <option value="country">Country</option>
+                      <option value="classic">Classic</option>
+                      <option value="rock">Rock</option>
+                      <option value="jazz">Jazz</option>
+                    </select>
+                  </FormControl>
+                  <FormMessage>{errors.genre?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" className="mt-4 w-full" disabled={isPending}>
+              {isPending && (
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {isPending ? "Creating..." : "Create"}
+            </Button>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
