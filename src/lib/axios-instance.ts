@@ -13,9 +13,11 @@ interface RefreshQueueItem {
 
 let isRefreshing = false;
 let refreshQueue: RefreshQueueItem[] = [];
+const baseURL = process.env.NEXT_PUBLIC_API_URL;
 
 const api: AxiosInstance = axios.create({
-  baseURL: "http://localhost:9000/api/v1",
+
+  baseURL: baseURL || "http://localhost:9000/api/v1",
   withCredentials: true,
 });
 
