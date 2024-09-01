@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import { ModeToggle } from "./theme-toggle";
 
 export function Navbar() {
   const dispatch = useDispatch();
@@ -30,9 +31,11 @@ export function Navbar() {
     <nav className="bg-white shadow-md p-4 flex items-center justify-between">
       {user && (
         <div className="flex items-center justify-between w-full  ">
+          <ModeToggle />
           <h1 className="text-xl text-center font-medium">
             Artist Management System
           </h1>
+
           <DropdownMenu>
             <DropdownMenuTrigger className="flex gap-2 items-center">
               <div className="flex items-center">

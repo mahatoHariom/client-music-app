@@ -61,7 +61,7 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <Card className="w-full max-w-lg mx-auto p-8 shadow-lg">
+    <Card className="w-full max-w-lg mx-auto p-8 shadow-lg flex flex-col gap-2">
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <h1 className="text-sky-600 text-center text-2xl font-bold">Login</h1>
@@ -99,7 +99,7 @@ const LoginPage: React.FC = () => {
           </Button>
         </form>
       </Form>
-      <Link href={"/register"} className="p-2  text-primary mt-2">
+      <Link href={"/register"} className="p-2  text-primary mt-2 text-sm">
         {`Don't have an account ? Register`}
       </Link>
     </Card>
